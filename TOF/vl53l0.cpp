@@ -173,6 +173,58 @@ int GetVl53l0Value(uint16_t &acnt,uint16_t &scnt,uint16_t &dist,byte &DeviceRang
   acnt = makeuint16(gbuf[7], gbuf[6]);     //
   scnt = makeuint16(gbuf[9], gbuf[8]);
   dist = makeuint16(gbuf[11], gbuf[10]);     
-  DeviceRangeStatusInternal = ((gbuf[0] & 0x78) >> 3);   //8 过近；9接收不到，11正常
+  DeviceRangeStatusInternal = ((gbuf[0] & 0x78) >> 3);   //8 鏉╁洩绻庨敍锟�9閹恒儲鏁规稉宥呭煂閿涳拷11濮濓絽鐖�
   return 0;
 }
+uint32_t g_nCurrentDistance=0;
+
+int GetDistance(){
+  uint16_t acnt;
+  uint16_t scnt;
+  uint16_t dist;
+  byte DeviceRangeStatusInternal;
+  int ret=GetVl53l0Value(acnt,scnt,dist,DeviceRangeStatusInternal);
+  if(ret!=0){
+    Serial.println("not ready");  
+    return -1;
+  }
+  else
+  {
+//    Serial.print("ambient count: "); Serial.println(acnt);    
+//    Serial.print("signal count: ");  Serial.println(scnt);
+//    Serial.print("distance ");       Serial.println(dist);
+//    Serial.print("status: ");        Serial.println(DeviceRangeStatusInternal);  
+    {//定时获取长度，并进行滤波 处理
+      if(DeviceRangeStatusInternal>8){
+          static uint16_t distArry[8];
+          static bool flag=false;
+          static uint8_t i=0;
+          distArry[i++]=dist;
+          if(i>=8){
+            flag=true;
+            i=0;
+          }
+          uint32_t sum=0;
+          if(flag){
+            for(int j=0;j<8;j++){
+            sum=sum+distArry[j];
+            g_nCurrentDistance=sum>>3;  
+            }
+          }else{
+            for(int j=0;j<i;j++){
+            sum=sum+distArry[j];
+            g_nCurrentDistance=sum/i;  
+            }
+          }
+//            Serial.print("distance ");       Serial.println(dist);
+//            Serial.print("status: ");        Serial.println(DeviceRangeStatusInternal);  
+        } 
+        else{
+            //鏉╂柨娲栭悩鑸碉拷浣虹垳8  
+       }
+     }
+  }    
+  return dist;
+}
+
+
