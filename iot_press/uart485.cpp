@@ -10,14 +10,16 @@ void setup_uart() {
 }
 
 void loop_uart() {
-  
- 
   Slave.write("tesst");
-    
-
   while(Slave.available()) {
     val = Slave.read();
     Serial.println(val); 
   }
   
 }
+
+int SlaveSend(char *buf){
+  Slave.write(buf);
+}
+
+

@@ -1,6 +1,7 @@
 #include "Arduino.h"
 int temp;//温度
 int humi;//湿度
+
 int check;//校对码
 unsigned int time_count;
 int dat[40] = {0};

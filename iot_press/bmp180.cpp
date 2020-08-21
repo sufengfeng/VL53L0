@@ -24,7 +24,9 @@ double pressure;
 double pressure2;
 long b5;          
 double altitude;  
- 
+extern float temperature;  
+extern double pressure;   
+extern double altitude;  
  
  unsigned int bmp180ReadUT();
  unsigned long bmp180ReadUP();
@@ -197,7 +199,7 @@ void setup_bmp180()
 void loop_bmp180()
 {
   calculate();
-  show();
-  delay(1000);
+  //show();
+//  delay(1000);
 }
  
